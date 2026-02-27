@@ -1,8 +1,3 @@
-"""
-Seplos V2 / V15 BMS Data Fetcher
-Reads one or more Seplos protocol v2.0 BMS (in parallel) via
-(remote) serial connection(s) and publishes their data to MQTT
-"""
 import sys
 import os
 import signal
@@ -123,7 +118,7 @@ def graceful_exit(signum: Optional[int] = None, _frame: Optional[Any] = None) ->
         if app_state.mqtt_client and app_state.mqtt_client.is_connected():
             if logger:
                 logger.info("Sending offline status to MQTT")
-            app_state.mqtt_client.publish(f"{os.getenv('MQTT_TOPIC', 'seplos')}/availability", "offline", retain=True)
+            app_state.mqtt_client.publish(f"{os.getenv('MQTT_TOPIC', 'inverter')}/availability", "offline", retain=True)
             inverter =  app_state.inverter
             app_state.mqtt_client.publish(_availability_topic(inverter["address"]), "offline", retain=False)
             if logger:
@@ -183,9 +178,9 @@ class Config:
     # MQTT Configuration
     MQTT_HOST = get_env_value("MQTT_HOST", "192.168.1.100", str)
     MQTT_PORT = get_env_value("MQTT_PORT", 1883, int)
-    MQTT_USERNAME = get_env_value("MQTT_USERNAME", "seplos-mqtt", str)
+    MQTT_USERNAME = get_env_value("MQTT_USERNAME", "mqtt", str)
     MQTT_PASSWORD = get_env_value("MQTT_PASSWORD", "", str)
-    MQTT_TOPIC = get_env_value("MQTT_TOPIC", "seplos", str)
+    MQTT_TOPIC = get_env_value("MQTT_TOPIC", "inverter", str)
     MQTT_UPDATE_INTERVAL = get_env_value("MQTT_UPDATE_INTERVAL", 30, int)
 
     # Home Assistant Discovery
@@ -202,7 +197,7 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s:%(name)s:%(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-logger = logging.getLogger("SeplosBMS")
+logger = logging.getLogger("Inverter")
 
 # Set log level based on configuration
 log_levels = {

@@ -406,18 +406,17 @@ class AutoDiscoveryConfig:
     # -------------------------------------------------------------------------
 
     def _add_device_info(self, entity: Dict[str, Any], modbus_id: int) -> None:
-        """Setze passende device-Infos für das gegebene Pack."""
         if modbus_id not in self._device_info_published:
             entity["dev"] = {**DEVICE_BASE_CONFIG}
-            entity["dev"]["name"] = f"Seplos BMS Pack-{modbus_id} ({'Master' if modbus_id == 0 else 'Slave'})"
-            entity["dev"]["ids"] = f"seplos_bms_pack_{modbus_id}"
+            entity["dev"]["name"] = f"Inverter-{modbus_id} ({'Master' if modbus_id == 0 else 'Slave'})"
+            entity["dev"]["ids"] = f"Inverter_{modbus_id}"
             if modbus_id > 0:
-                entity["dev"]["via_device"] = "seplos_bms_pack_0"
+                entity["dev"]["via_device"] = "inverter_0"
             self._device_info_published.add(modbus_id)
         else:
-            entity["dev"] = {"ids": f"seplos_bms_pack_{modbus_id}"}
+            entity["dev"] = {"ids": f"inverter_{modbus_id}"}
             if modbus_id > 0:
-                entity["dev"]["via_device"] = "seplos_bms_pack_0"
+                entity["dev"]["via_device"] = "inverter_0"
 
     def _build_availability(self, modbus_id: int) -> List[Dict[str, str]]:
         return [
