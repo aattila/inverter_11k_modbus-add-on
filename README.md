@@ -3,7 +3,6 @@
 This Anenji 11kW hybrid solar inverter (likely the EM11000-48L model) is a powerful, high-frequency unit designed for both off-grid and on-grid applications. It features a pure sine wave output and a built-in 160A dual MPPT solar charge controller, supporting a wide PV input range of 60-500VDC. 
 
 ![Solar Inverter 11k](/img/inverter_1.png)
-![Solar Inverter 11k](/img/inverter_2.png)
 ![Solar Inverter 11k](/img/inverter_3.png)
 
 ## Key Technical Features
