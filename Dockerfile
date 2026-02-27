@@ -12,7 +12,7 @@ RUN apk add --no-cache \
     py3-paho-mqtt \
     py3-pyserial
 
-RUN pip3 install --no-cache-dir minimalmodbus 
+RUN pip install --no-cache-dir minimalmodbus 
 
 # Set the working directory
 WORKDIR /usr/src/app
