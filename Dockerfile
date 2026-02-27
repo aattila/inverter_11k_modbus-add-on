@@ -10,9 +10,7 @@ RUN apk add --no-cache \
     bash \
     jq \
     py3-paho-mqtt \
-    py3-pyserial \
-    minimalmodbus \
-    serial
+    py3-pyserial
 
 RUN pip3 install --no-cache-dir minimalmodbus 
 
