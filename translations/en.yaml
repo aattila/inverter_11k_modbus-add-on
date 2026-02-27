@@ -1,0 +1,58 @@
+configuration:
+ 
+  serial_interface:
+    name: "Serial Interface"
+    description: "Serial device path (e.g., /dev/ttyUSB0 for local or /tmp/vcom0 for remote via socat)"
+  
+  modbus_id:
+    name: "Modbus ID"
+    description: "Modbus ID of the inverter (default: 1)"
+  
+  # MQTT Configuration
+  mqtt_topic:
+    name: "MQTT Topic"
+    description: "Base MQTT topic for publishing battery data"
+  
+  mqtt_update_interval:
+    name: "MQTT Update Interval"
+    description: "Seconds between MQTT updates (0 = continuous updates)"
+  
+  # Home Assistant Integration
+  enable_ha_discovery:
+    name: "Enable HA Auto-Discovery"
+    description: "Automatically create sensor entities in Home Assistant"
+  
+  ha_discovery_prefix:
+    name: "HA Discovery Prefix"
+    description: "MQTT discovery prefix for Home Assistant (usually 'homeassistant')"
+
+  invert_ha_dis_charge_measurements:
+    name: "Invert HA Dis-/Charge measurements"
+    description: "Inverts the values of the charging and discharging sensors in Home Assistant"
+  
+  # System Settings
+  logging_level:
+    name: "Logging Level"
+    description: "Set the verbosity of logs (debug shows most detail)"
+
+tabs:
+  connection:
+    title: "Connection Settings"
+    description: "Configure how to connect to your Inverter via Modbus"
+  
+  modbus:
+    title: "Battery Settings"
+    description: "Configure your modbus parameters"
+  
+  mqtt:
+    title: "MQTT Settings"
+    description: "Configure MQTT communication"
+  
+  homeassistant:
+    title: "Home Assistant"
+    description: "Configure Home Assistant integration"
+  
+  system:
+    title: "System"
+    description: "System and debugging configuration"
+

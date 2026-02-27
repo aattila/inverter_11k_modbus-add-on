@@ -1,0 +1,11 @@
+name: Inverter 11k Modbus Add-on
+url: https://github.com/aattila/inverter_11k_modbus-add-on
+maintainer: Antal Attila
+description: No-name Chinese 11 kW Inverter Data Logger
+version: 1.0.0
+slug: inverter_11k_modbus
+homeassistant: 2026.2.0
+arch:
+  - amd64
+  - armv7
+  - arm64
