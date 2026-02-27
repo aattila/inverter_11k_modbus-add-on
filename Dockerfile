@@ -12,7 +12,9 @@ RUN apk add --no-cache \
     py3-paho-mqtt \
     py3-pyserial
 
-RUN pip install --no-cache-dir minimalmodbus 
+# Add the flag to allow global installation inside the container
+RUN pip install --no-cache-dir --break-system-packages minimalmodbus 
+
 
 # Set the working directory
 WORKDIR /usr/src/app
