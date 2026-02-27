@@ -106,7 +106,7 @@ class HealthHandler(BaseHTTPRequestHandler):
 
 
 def _start_health_server() -> None:
-    server = HTTPServer(("0.0.0.0", 8080), HealthHandler)
+    server = HTTPServer(("0.0.0.0", 8081), HealthHandler)
     server.serve_forever()
 
 
