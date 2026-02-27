@@ -14,6 +14,8 @@ RUN apk add --no-cache \
     minimalmodbus \
     serial
 
+RUN pip3 install --no-cache-dir minimalmodbus 
+
 # Set the working directory
 WORKDIR /usr/src/app
 
