@@ -532,7 +532,7 @@ class SolarInverter:
 
             return None, True
         except Exception as e:
-            logger.exception("Inverter %s: Error reading data", self.modbus_id)
+            logger.error("Inverter %s: Error reading data: %s", self.modbus_id, e)
             return None, False
 
 

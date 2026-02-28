@@ -2,8 +2,8 @@
 
 This Anenji 11kW hybrid solar inverter (likely the EM11000-48L model) is a powerful, high-frequency unit designed for both off-grid and on-grid applications. It features a pure sine wave output and a built-in 160A dual MPPT solar charge controller, supporting a wide PV input range of 60-500VDC. 
 
-![Solar Inverter 11k](/img/inverter_1.png)
-![Solar Inverter 11k](/img/inverter_3.png)
+![Solar Inverter 11k](https://raw.githubusercontent.com/aattila/inverter_11k_modbus-add-on/main/img/inverter_1.png)
+![Solar Inverter 11k](https://raw.githubusercontent.com/aattila/inverter_11k_modbus-add-on/main/img/inverter_3.png)
 
 ## Key Technical Features
 
@@ -27,15 +27,15 @@ The inverter has two RS232 ports but thay are phisically connected so they are s
 
 You need a standard RS232/USB adapter, any cheep one will work ok.
 
-![Solar Inverter 11k](/img/adapter.png)
+![Solar Inverter 11k](https://raw.githubusercontent.com/aattila/inverter_11k_modbus-add-on/main/img/adapter.png)
 
 Plugging this cable USB part in your Home Assistant device will create a serial port. The exact port name you can see in your Home Assistant at the menu __Settings > System > Hardware > All Hardware__  and scroll until you see some __tty*__ devices. You have to see something like:
 
-![Solar Inverter 11k](/img/port.png)
+![Solar Inverter 11k](https://raw.githubusercontent.com/aattila/inverter_11k_modbus-add-on/main/img/port.png)
 
 The DB9 side of the cable goes into the inverter's DB9 port. That is having the standard DB9 serial configuration with pins 2 (TX),3 (RX) and 5 (GND)
 
-![Solar Inverter 11k](/img/inverter_4.png)
+![Solar Inverter 11k](https://raw.githubusercontent.com/aattila/inverter_11k_modbus-add-on/main/img/inverter_4.png)
 
 ### The protocol
 

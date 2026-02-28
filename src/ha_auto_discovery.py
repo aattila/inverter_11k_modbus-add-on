@@ -10,9 +10,10 @@ logger = logging.getLogger("Inverter.Discovery")
 
 # Base sensor template
 BASE_SENSOR = {
+    "ids": "EM11000-48L",  # unique_id
     "name": "Solar Inverter Data Logger",
-    "uniq_id": "",  # unique_id
-    "obj_id": "",  # object_id
+    "uniq_id": "EM11000-48L",  # unique_id
+    "obj_id": "EM11000-48L",  # object_id
     "stat_t": "",  # state_topic
     "val_tpl": "",  # value_template
     "avty": [],  # availability
