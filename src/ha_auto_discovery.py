@@ -10,7 +10,7 @@ logger = logging.getLogger("Inverter.Discovery")
 
 # Base sensor template
 BASE_SENSOR = {
-    "name": "",
+    "name": "Solar Inverter Data Logger",
     "uniq_id": "",  # unique_id
     "obj_id": "",  # object_id
     "stat_t": "",  # state_topic
@@ -22,7 +22,7 @@ BASE_SENSOR = {
 DEVICE_BASE_CONFIG = {
     "hw": "11k",  # hw_version
     "sw": "0.0",  # sw_version
-    "mdl": "Solar Inverter",  # model
+    "mdl": "Solar Inverter 11kW",  # model
     "mf": "No Name"  # manufacturer
 }
 
@@ -408,7 +408,7 @@ class AutoDiscoveryConfig:
     def _add_device_info(self, entity: Dict[str, Any], modbus_id: int) -> None:
         if modbus_id not in self._device_info_published:
             entity["dev"] = {**DEVICE_BASE_CONFIG}
-            entity["dev"]["name"] = f"Inverter-{modbus_id} ({'Master' if modbus_id == 0 else 'Slave'})"
+            entity["dev"]["name"] = f"Inverter-{modbus_id}"
             entity["dev"]["ids"] = f"Inverter_{modbus_id}"
             if modbus_id > 0:
                 entity["dev"]["via_device"] = "inverter_0"

@@ -106,7 +106,7 @@ class HealthHandler(BaseHTTPRequestHandler):
 
 
 def _start_health_server() -> None:
-    server = HTTPServer(("0.0.0.0", 8081), HealthHandler)
+    server = HTTPServer(("0.0.0.0", 8082), HealthHandler)
     server.serve_forever()
 
 
@@ -534,7 +534,7 @@ class SolarInverter:
 
             return None, True
         except Exception as e:
-            logger.error("Inverter %s: Error reading data: %s", self.modbus_id, e)
+            logger.exception("Inverter %s: Error reading data", self.modbus_id)
             return None, False
 
 
@@ -633,7 +633,7 @@ def main():
         # Start minimal HTTP health endpoint for HA Supervisor watchdog
         health_thread = threading.Thread(target=_start_health_server, daemon=True)
         health_thread.start()
-        logger.info("Health endpoint started on http://0.0.0.0:8081/health")
+        logger.info("Health endpoint started on http://0.0.0.0:8082/health")
 
         # Send Home Assistant Auto-Discovery configurations on startup
         if Config.ENABLE_HA_DISCOVERY_CONFIG:
