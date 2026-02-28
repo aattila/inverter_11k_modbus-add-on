@@ -197,7 +197,7 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s:%(name)s:%(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-logger = logging.getLogger("Inverter")
+logger = logging.getLogger("DataLogger")
 
 # Set log level based on configuration
 log_levels = {
@@ -486,9 +486,8 @@ class SolarInverter:
 
             for ret in range(self.FRAME_READ_RETRIES):
                 values = self.read_registers(page_address)
-
-            if len(values) > 0:
-                break;
+                if len(values) > 0:
+                    break;
             
             logger.info("Retrying page %s", p )
             time.sleep(0.5)
