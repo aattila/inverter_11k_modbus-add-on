@@ -181,7 +181,6 @@ class Config:
     MQTT_USERNAME = get_env_value("MQTT_USERNAME", "mqtt", str)
     MQTT_PASSWORD = get_env_value("MQTT_PASSWORD", "", str)
     MQTT_TOPIC = get_env_value("MQTT_TOPIC", "inverter", str)
-    MQTT_UPDATE_INTERVAL = get_env_value("MQTT_UPDATE_INTERVAL", 30, int)
 
     # Home Assistant Discovery
     ENABLE_HA_DISCOVERY_CONFIG = get_env_value("ENABLE_HA_DISCOVERY_CONFIG", True, bool)
@@ -303,10 +302,11 @@ class SolarInverter:
         self.modbus_id = modbus_id
         self.last_status: Optional[InverterData] = None
         self.telemetry = Telemetry()
+        self.register_map: Dict[int, int] = {}
 
-    def process_register(self, register_map, address, decimals=0, signed=False, note=""):
+    def process_register(self, address, decimals=0, signed=False, note=""):
 
-        value = register_map[address]
+        value = self.register_map[address]
 
         # 1. Handle Signedness (Two's Complement)
         if signed and value > 32767:
@@ -321,16 +321,16 @@ class SolarInverter:
         return value
 
 
-    def get_telemetry(self, register_map) -> Dict[str, Any]:
+    def get_telemetry(self) -> Dict[str, Any]:
 
         telemetry_feedback = {"normal": {}}
         feedback = telemetry_feedback["normal"]
 
         # Battery Status
-        self.telemetry.battery_voltage = self.process_register(277, register_map, decimals = 1, signed = False, note="Battery Voltage")
-        self.telemetry.battery_current = self.process_register(278, register_map, decimals = 1, signed = True,  note="Battery Current")
-        self.telemetry.battery_power = self.process_register(279, register_map, decimals = 0, signed = True,  note="Battery Charge/Discharge Power")
-        self.telemetry.battery_soc = self.process_register(280, register_map, decimals = 0, signed = False, note="Battery SoC")
+        self.telemetry.battery_voltage = self.process_register(277, decimals = 1, signed = False, note="Battery Voltage")
+        self.telemetry.battery_current = self.process_register(278, decimals = 1, signed = True,  note="Battery Current")
+        self.telemetry.battery_power = self.process_register(279,  decimals = 0, signed = True,  note="Battery Charge/Discharge Power")
+        self.telemetry.battery_soc = self.process_register(280, decimals = 0, signed = False, note="Battery SoC")
         
         feedback.update({
             "battery_voltage": self.telemetry.battery_voltage,
@@ -340,9 +340,9 @@ class SolarInverter:
         })
 
         # Grid Status
-        self.telemetry.grid_input_voltage = self.process_register(338, register_map, decimals = 1, signed = False, note="Grid AC Ref. Voltage")
-        self.telemetry.grid_line_voltage = self.process_register(342, register_map, decimals = 1, signed = False, note="Grif AC Line Voltage")
-        self.telemetry.grid_power = self.process_register(340, register_map, decimals = 0, signed = False, note="Grid Power in W")
+        self.telemetry.grid_input_voltage = self.process_register(338, decimals = 1, signed = False, note="Grid AC Ref. Voltage")
+        self.telemetry.grid_line_voltage = self.process_register(342, decimals = 1, signed = False, note="Grif AC Line Voltage")
+        self.telemetry.grid_power = self.process_register(340, decimals = 0, signed = False, note="Grid Power in W")
 
         feedback.update({
             "grid_input_voltage": self.telemetry.grid_input_voltage,
@@ -351,11 +351,11 @@ class SolarInverter:
         })
 
         # L1 Output Status
-        self.telemetry.l1_voltage = self.process_register(346, register_map, decimals = 1, signed = False, note="L1 AC Voltage")
-        self.telemetry.l1_current = self.process_register(347, register_map, decimals = 1, signed = False, note="L1 Current in A")
-        self.telemetry.l1_power = self.process_register(348, register_map, decimals = 0, signed = True,  note="L1 Power in W")
-        self.telemetry.l1_apparent_power = self.process_register(349, register_map, decimals = 0, signed = True,  note="L1 Power in VA")
-        self.telemetry.l1_load = self.process_register(350, register_map, decimals = 0, signed = False, note="L1 Load in %")
+        self.telemetry.l1_voltage = self.process_register(346, decimals = 1, signed = False, note="L1 AC Voltage")
+        self.telemetry.l1_current = self.process_register(347, decimals = 1, signed = False, note="L1 Current in A")
+        self.telemetry.l1_power = self.process_register(348, decimals = 0, signed = True,  note="L1 Power in W")
+        self.telemetry.l1_apparent_power = self.process_register(349, decimals = 0, signed = True,  note="L1 Power in VA")
+        self.telemetry.l1_load = self.process_register(350, decimals = 0, signed = False, note="L1 Load in %")
 
         feedback.update({
             "l1_voltage": self.telemetry.l1_voltage,
@@ -366,11 +366,11 @@ class SolarInverter:
         })
 
         # L2 Output Status
-        self.telemetry.l2_voltage = self.process_register(384, register_map, decimals = 1, signed = False, note="L2 AC Voltage")
-        self.telemetry.l2_current = self.process_register(385, register_map, decimals = 1, signed = False, note="L2 Current in A")
-        self.telemetry.l2_apparent_power = self.process_register(386, register_map, decimals = 0, signed = True,  note="L2 Power in VA")
-        self.telemetry.l2_power = self.process_register(387, register_map, decimals = 0, signed = True,  note="L2 Power in W")
-        self.telemetry.l2_load = self.process_register(388, register_map, decimals = 0, signed = False, note="L2 Load in W")
+        self.telemetry.l2_voltage = self.process_register(384, decimals = 1, signed = False, note="L2 AC Voltage")
+        self.telemetry.l2_current = self.process_register(385, decimals = 1, signed = False, note="L2 Current in A")
+        self.telemetry.l2_apparent_power = self.process_register(386, decimals = 0, signed = True,  note="L2 Power in VA")
+        self.telemetry.l2_power = self.process_register(387, decimals = 0, signed = True,  note="L2 Power in W")
+        self.telemetry.l2_load = self.process_register(388, decimals = 0, signed = False, note="L2 Load in W")
 
         feedback.update({
             "l2_voltage": self.telemetry.l2_voltage,
@@ -380,8 +380,8 @@ class SolarInverter:
             "l2_load": self.telemetry.l2_load
         })
         # Total Output Line
-        self.telemetry.total_output_power = self.process_register(344, register_map, decimals = 0, signed = False, note="L1+L2 Power in VA")
-        self.telemetry.total_output_load = self.process_register(256, register_map, decimals = 0, signed = False, note="L1+L2 Load in %")
+        self.telemetry.total_output_power = self.process_register(344, decimals = 0, signed = False, note="L1+L2 Power in VA")
+        self.telemetry.total_output_load = self.process_register(256, decimals = 0, signed = False, note="L1+L2 Load in %")
 
         feedback.update({
             "total_output_power": self.telemetry.total_output_power,
@@ -389,9 +389,9 @@ class SolarInverter:
         })
 
         # PV 1 Status
-        self.telemetry.pv1_voltage = self.process_register(351, register_map, decimals = 1, signed = False, note="PV1 Voltage")
-        self.telemetry.pv1_current = self.process_register(352, register_map, decimals = 1, signed = False, note="PV1 Current in A")
-        self.telemetry.pv1_power = self.process_register(353, register_map, decimals = 0, signed = False, note="PV1 Power in W")
+        self.telemetry.pv1_voltage = self.process_register(351, decimals = 1, signed = False, note="PV1 Voltage")
+        self.telemetry.pv1_current = self.process_register(352, decimals = 1, signed = False, note="PV1 Current in A")
+        self.telemetry.pv1_power = self.process_register(353, decimals = 0, signed = False, note="PV1 Power in W")
 
         feedback.update({
             "pv1_voltage": self.telemetry.pv1_voltage,
@@ -400,9 +400,9 @@ class SolarInverter:
         })
         
         # PV 2 Status
-        self.telemetry.pv2_voltage = self.process_register(389, register_map, decimals = 1, signed = False, note="PV2 Voltage")
-        self.telemetry.pv2_current = self.process_register(390, register_map, decimals = 1, signed = False, note="PV2 Current in A")
-        self.telemetry.pv2_power = self.process_register(391, register_map, decimals = 0, signed = False, note="PV2 Power in W")
+        self.telemetry.pv2_voltage = self.process_register(389, decimals = 1, signed = False, note="PV2 Voltage")
+        self.telemetry.pv2_current = self.process_register(390, decimals = 1, signed = False, note="PV2 Current in A")
+        self.telemetry.pv2_power = self.process_register(391, decimals = 0, signed = False, note="PV2 Power in W")
 
         feedback.update({
             "pv2_voltage": self.telemetry.pv2_voltage,
@@ -410,19 +410,19 @@ class SolarInverter:
             "pv2_power": self.telemetry.pv2_power
         })
         # Total PV
-        self.telemetry.total_pv_power = self.process_register(302, register_map, decimals = 0, signed = False, note="PV1 + PV2 Power in W")
+        self.telemetry.total_pv_power = self.process_register(302, decimals = 0, signed = False, note="PV1 + PV2 Power in W")
 
         feedback.update({
             "total_pv_power": self.telemetry.total_pv_power
         })
 
         # DateTime
-        self.telemetry.year = self.process_register(696, register_map, decimals = 0, signed = False, note="Year")
-        self.telemetry.month = self.process_register(697, register_map, decimals = 0, signed = False, note="Month")
-        self.telemetry.day = self.process_register(698, register_map, decimals = 0, signed = False, note="Day")
-        self.telemetry.hour = self.process_register(699, register_map, decimals = 0, signed = False, note="Hour")
-        self.telemetry.minute = self.process_register(700, register_map, decimals = 0, signed = False, note="Minutes")
-        self.telemetry.second = self.process_register(701, register_map, decimals = 0, signed = False, note="Seconds")      
+        self.telemetry.year = self.process_register(696, decimals = 0, signed = False, note="Year")
+        self.telemetry.month = self.process_register(697, decimals = 0, signed = False, note="Month")
+        self.telemetry.day = self.process_register(698, decimals = 0, signed = False, note="Day")
+        self.telemetry.hour = self.process_register(699, decimals = 0, signed = False, note="Hour")
+        self.telemetry.minute = self.process_register(700, decimals = 0, signed = False, note="Minutes")
+        self.telemetry.second = self.process_register(701, decimals = 0, signed = False, note="Seconds")      
 
         feedback.update({
             "year": self.telemetry.year,
@@ -434,8 +434,8 @@ class SolarInverter:
         })
 
         # Energy
-        self.telemetry.energy_today = self.process_register(702, register_map, decimals = 2, signed = False, note="Energy per Day in kW/h")
-        self.telemetry.energy_year = self.process_register(704, register_map, decimals = 2, signed = False, note="Energy per Year in kW/h")
+        self.telemetry.energy_today = self.process_register(702, decimals = 2, signed = False, note="Energy per Day in kW/h")
+        self.telemetry.energy_year = self.process_register(704, decimals = 2, signed = False, note="Energy per Year in kW/h")
 
         feedback.update({
             "energy_today": self.telemetry.energy_today,
@@ -443,15 +443,15 @@ class SolarInverter:
         })
 
         # Configured Limits
-        self.telemetry.conf_line_voltage = self.process_register(606, register_map, decimals = 1, signed = False, note="Voltage Set")
-        self.telemetry.conf_l2_power = self.process_register(607, register_map, decimals = 0, signed = False, note="Capacity for L2 in W")
-        self.telemetry.conf_line_frequency = self.process_register(608, register_map, decimals = 0, signed = False, note="Frequency Set in Hz")
-        self.telemetry.conf_chrg_float_voltage = self.process_register(638, register_map, decimals = 1, signed = False, note="Floating Charging Voltage")
-        self.telemetry.conf_chrg_max_current = self.process_register(640, register_map, decimals = 1, signed = False, note="Max Total Charging Current")
-        self.telemetry.conf_chrg_grid_current = self.process_register(641, register_map, decimals = 1, signed = False, note="Max Grid Charging Current")
-        self.telemetry.conf_pointback = self.process_register(644, register_map, decimals = 1, signed = False, note="SoC Point Back to Utility")
-        self.telemetry.conf_l1_cutoff = self.process_register(645, register_map, decimals = 1, signed = False, note="Cutoff Voltage for L1")
-        self.telemetry.conf_l2_cutoff = self.process_register(646, register_map, decimals = 1, signed = False, note="Cutoff Voltage for L2")
+        self.telemetry.conf_line_voltage = self.process_register(606, decimals = 1, signed = False, note="Voltage Set")
+        self.telemetry.conf_l2_power = self.process_register(607, decimals = 0, signed = False, note="Capacity for L2 in W")
+        self.telemetry.conf_line_frequency = self.process_register(608, decimals = 0, signed = False, note="Frequency Set in Hz")
+        self.telemetry.conf_chrg_float_voltage = self.process_register(638, decimals = 1, signed = False, note="Floating Charging Voltage")
+        self.telemetry.conf_chrg_max_current = self.process_register(640, decimals = 1, signed = False, note="Max Total Charging Current")
+        self.telemetry.conf_chrg_grid_current = self.process_register(641, decimals = 1, signed = False, note="Max Grid Charging Current")
+        self.telemetry.conf_pointback = self.process_register(644, decimals = 1, signed = False, note="SoC Point Back to Utility")
+        self.telemetry.conf_l1_cutoff = self.process_register(645, decimals = 1, signed = False, note="Cutoff Voltage for L1")
+        self.telemetry.conf_l2_cutoff = self.process_register(646, decimals = 1, signed = False, note="Cutoff Voltage for L2")
 
         feedback.update({
             "voltage_conf": self.telemetry.conf_line_voltage,
@@ -476,7 +476,7 @@ class SolarInverter:
             logger.error("Error reading registers: %s", e)
         return values
 
-    def read_modbus(self, register_map, start_address = 0, pages = 5):
+    def read_modbus(self, start_address = 0, pages = 5):
         for p in range(pages):
             time.sleep(1)
             page_address = start_address + self.REGISTER_PAGE * p
@@ -492,7 +492,7 @@ class SolarInverter:
             logger.info("Retrying page %s", p )
             time.sleep(0.5)
 
-            register_map |= {page_address + i: val for i, val in enumerate(values)}
+            self.register_map |= {page_address + i: val for i, val in enumerate(values)}
 
 
     def read_serial_data(self) -> Tuple[Optional[InverterData], bool]:
@@ -507,18 +507,16 @@ class SolarInverter:
             "telemetry": {},
         }
 
-        register_map = {}
-
         try:
             # Flush serial buffers
             app_state.instrument.serial.flushOutput()
             app_state.instrument.serial.flushInput()
 
-            self.read_modbus(register_map, start_address=100, pages=3)
-            self.read_modbus(register_map, start_address=600, pages=1)
+            self.read_modbus(start_address=100, pages=3)
+            self.read_modbus(start_address=600, pages=1)
 
             # Request telemetry data
-            telemetry_feedback = self.get_telemetry(register_map)
+            telemetry_feedback = self.get_telemetry()
 
             if telemetry_feedback is None:
                 return None, False
@@ -692,14 +690,7 @@ def main():
 
                 app_state.mqtt_client.publish(f"{Config.MQTT_TOPIC}/availability", "online", retain=False)
 
-                time.sleep(1)
-
-                if Config.MQTT_UPDATE_INTERVAL > 0:
-                    logger.info(
-                        "Waiting %s seconds before next cycle",
-                        Config.MQTT_UPDATE_INTERVAL
-                    )
-                time.sleep(Config.MQTT_UPDATE_INTERVAL)
+                time.sleep(30)
 
             except Exception as e:
                 logger.error("Error in main loop: %s", e)
