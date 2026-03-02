@@ -595,7 +595,7 @@ def initialize_serial() -> minimalmodbus.Instrument:
         inverter.serial.stopbits = 1
         inverter.serial.timeout  = 1           # Seconds
         inverter.mode = minimalmodbus.MODE_RTU # Explicitly set RTU mode
-        inverter.close_port_after_each_call = True
+        inverter.close_port_after_each_call = False
         inverter.clear_buffers_before_each_transaction = True
 
 
@@ -616,7 +616,6 @@ def main():
     global last_update_ts
     try:
         app_state.mqtt_client = initialize_mqtt()
-        app_state.instrument = initialize_serial()
         app_state.mqtt_client.publish(_availability_topic(Config.MODBUS_ID), "offline", retain=False)
 
         solar_inverter = SolarInverter(modbus_id=Config.MODBUS_ID)
@@ -650,6 +649,8 @@ def main():
         # Main loop
         while True:
             try:
+                app_state.instrument = initialize_serial()
+
                 inverter = app_state.inverter
 
                 # Fetch data
@@ -693,6 +694,8 @@ def main():
                 app_state.mqtt_client.publish(f"{Config.MQTT_TOPIC}/availability", "online", retain=False)
 
                 time.sleep(1)
+                app_state.instrument.serial.close()
+
                 if Config.MQTT_UPDATE_INTERVAL > 0:
                     logger.info(
                         "Waiting %s seconds before next cycle",
