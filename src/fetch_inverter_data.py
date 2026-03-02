@@ -181,6 +181,7 @@ class Config:
     MQTT_USERNAME = get_env_value("MQTT_USERNAME", "mqtt", str)
     MQTT_PASSWORD = get_env_value("MQTT_PASSWORD", "", str)
     MQTT_TOPIC = get_env_value("MQTT_TOPIC", "inverter", str)
+    MQTT_UPDATE_INTERVAL = get_env_value("MQTT_UPDATE_INTERVAL", 30, int)
 
     # Home Assistant Discovery
     ENABLE_HA_DISCOVERY_CONFIG = get_env_value("ENABLE_HA_DISCOVERY_CONFIG", True, bool)
@@ -594,7 +595,8 @@ def initialize_serial() -> minimalmodbus.Instrument:
         inverter.serial.stopbits = 1
         inverter.serial.timeout  = 1           # Seconds
         inverter.mode = minimalmodbus.MODE_RTU # Explicitly set RTU mode
-        #inverter.close_port_after_each_call = True
+        inverter.close_port_after_each_call = True
+        inverter.clear_buffers_before_each_transaction = True
 
 
         logger.info(
@@ -690,7 +692,13 @@ def main():
 
                 app_state.mqtt_client.publish(f"{Config.MQTT_TOPIC}/availability", "online", retain=False)
 
-                time.sleep(30)
+                time.sleep(1)
+                if Config.MQTT_UPDATE_INTERVAL > 0:
+                    logger.info(
+                        "Waiting %s seconds before next cycle",
+                        Config.MQTT_UPDATE_INTERVAL
+                    )
+                    time.sleep(Config.MQTT_UPDATE_INTERVAL)
 
             except Exception as e:
                 logger.error("Error in main loop: %s", e)

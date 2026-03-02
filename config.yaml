@@ -23,7 +23,7 @@ panel_icon: "mdi:cable-data"
 options:
   serial_interface: "/dev/ttyUSB0"
   mqtt_topic: "inverter_11k"
-  mqtt_update_interval: 1
+  mqtt_update_interval: 30
   modbus_id: 1
   enable_ha_discovery: true
   ha_discovery_prefix: "homeassistant"
