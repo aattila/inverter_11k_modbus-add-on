@@ -4,6 +4,8 @@ set -e
 
 bashio::log.info "Starting Inverter Data Logger Add-on..."
 
+export MODBUS_REMOTE_IP=$(bashio::config 'modbus_remote_ip')
+export MODBUS_REMOTE_PORT=$(bashio::config 'modbus_remote_port')
 export SERIAL_INTERFACE=$(bashio::config 'serial_interface')
 export MODBUS_ID=$(bashio::config 'modbus_id')
 export MQTT_UPDATE_INTERVAL=$(bashio::config 'mqtt_update_interval')
@@ -26,7 +28,14 @@ fi
 
 bashio::log.info "Using local serial interface: ${SERIAL_INTERFACE}"
 
-# Debug-Ausgabe wenn gewünscht
+if bashio::var.has_value "${MODBUS_REMOTE_IP}"; then
+    bashio::log.info "Configuring remote Modbus connection to ${MODBUS_REMOTE_IP}:${MODBUS_REMOTE_PORT}"
+    socat pty,link=${SERIAL_INTERFACE},raw tcp:${MODBUS_REMOTE_IP}:${MODBUS_REMOTE_PORT},retry,interval=.2,forever &
+    sleep 2
+else
+    bashio::log.info "Using local serial interface: ${SERIAL_INTERFACE}"
+fi
+
 if [[ "${LOGGING_LEVEL}" == "debug" ]]; then
     bashio::log.debug "Configuration loaded:"
     bashio::log.debug "SERIAL_INTERFACE: ${SERIAL_INTERFACE}"
