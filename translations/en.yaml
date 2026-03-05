@@ -1,5 +1,14 @@
 configuration:
  
+   # Modbus Connection
+  modbus_remote_ip:
+    name: "Remote Modbus IP Address"
+    description: "IP address of the remote Modbus device (e.g., Waveshare RS485.RS232-to-ETH). Leave empty for local serial connection."
+  
+  modbus_remote_port:
+    name: "Remote Modbus Port"
+    description: "TCP port of the remote Modbus device (default: 4196)"
+
   serial_interface:
     name: "Serial Interface"
     description: "Serial device path (e.g., /dev/ttyUSB0 for local or /tmp/vcom0 for remote via socat)"

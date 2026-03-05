@@ -21,6 +21,8 @@ services:
   - mqtt:need
 panel_icon: "mdi:cable-data"
 options:
+  modbus_remote_ip: ""
+  modbus_remote_port: 4196
   serial_interface: "/dev/ttyUSB0"
   mqtt_topic: "inverter_11k"
   mqtt_update_interval: 30
@@ -30,6 +32,8 @@ options:
   invert_ha_dis_charge_measurements: false
   logging_level: "info"
 schema:
+  modbus_remote_ip: "str?"
+  modbus_remote_port: "int?"
   serial_interface: "str"
   mqtt_topic: "str"
   mqtt_update_interval: "int"
