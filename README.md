@@ -61,6 +61,52 @@ The protocool is reverse engineered so it not contains all of the available data
 - Energy per day
 - Energy per year
 
+## Dasboards
+
+You can add your mqtt entities to the Home Assistant Energy dashboard.
+
+![Energy Dashboard](https://raw.githubusercontent.com/aattila/inverter_11k_modbus-add-on/main/img/energy.png)
+
+or by using the custom button card something like this:
+
+![Energy Dashboard](https://raw.githubusercontent.com/aattila/inverter_11k_modbus-add-on/main/img/dashboard.png)
+
+The dashboard code for the Solar Power:
+
+```
+show_name: false
+show_icon: true
+type: custom:button-card
+entity: sensor.inverter_1_total_pv_power
+icon: mdi:solar-power
+show_state: true
+grid_options:
+  columns: 3
+  rows: 2
+styles:
+  card:
+    - height: 120px
+  icon:
+    - width: 70px
+    - justify-self: center
+    - color: >
+        [[[ 
+
+        if (states['sensor.inverter_1_total_pv_power'].state < 10) return
+        'grey';
+
+        if (states['sensor.inverter_1_total_pv_power'].state < 1000) return
+        'red';
+
+        if (states['sensor.inverter_1_total_pv_power'].state < 2500) return
+        '#ff6f22';
+
+        if (states['sensor.inverter_1_total_pv_power'].state >= 2500) return
+        'green';
+
+        ]]]
+```
+
 ## For more robustness
 
 In case ig you are using multiple USB serial devices you will facing with the following problems:
